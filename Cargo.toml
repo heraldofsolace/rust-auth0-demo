@@ -1,0 +1,8 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "auth-lib",
+    "auth0-cli",
+    "auth0-api"
+]

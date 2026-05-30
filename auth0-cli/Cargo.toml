@@ -1,0 +1,13 @@
+[package]
+name = "auth0-cli"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.102"
+jsonwebtoken = { version = "10.4.0", features = ["rust_crypto"] }
+reqwest = { version = "0.13.4", features = ["form", "json"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+tokio = { version = "1.52.3", features = ["full"] }
+auth-lib = { path = "../auth-lib" }
