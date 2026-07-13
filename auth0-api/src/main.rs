@@ -13,7 +13,7 @@ use auth_lib::{
     models::UserClaims,
 };
 
-const AUDIENCE: &str = "";
+const AUDIENCE: &str = "https://rust-api-demo.example.com";
 
 pub struct AuthUser(pub UserClaims);
 

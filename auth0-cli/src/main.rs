@@ -9,9 +9,9 @@ use auth_lib::{
     },
 };
 
-const DOMAIN: &str = "";
-const CLIENT_ID: &str = "";
-const AUDIENCE: &str = "";
+const DOMAIN: &str = "dev-nhm1anxux78npt2g.us.auth0.com";
+const CLIENT_ID: &str = "h5F4p6k1X5Ti9kHXyJxw17KKBXIlZ6rc";
+const AUDIENCE: &str = "https://rust-api-demo.example.com";
 
 async fn request_device_code() -> Result<DeviceCodeResponse> {
 
@@ -43,7 +43,8 @@ async fn poll_for_token(
 ) -> Result<TokenResponse> {
 
     let client = reqwest::Client::new();
-
+    let mut interval = interval;
+    
     loop {
 
         let response = client
@@ -82,6 +83,7 @@ async fn poll_for_token(
 
             "slow_down" => {
                 println!("Slowing polling interval...");
+                interval += 5;
             }
 
             "expired_token" => {
@@ -117,6 +119,36 @@ fn say_hi(claims: &auth_lib::models::UserClaims) {
     println!("Welcome, {}!", name);
 }
 
+async fn call_api(access_token: &str) -> anyhow::Result<()> {
+    let client = reqwest::Client::new();
+
+    let response = client
+        .get("http://localhost:3000/protected")
+        .bearer_auth(access_token)
+        .send()
+        .await?;
+
+    if response.status().is_success() {
+        let body: serde_json::Value = response.json().await?;
+
+        println!("API response:");
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&body)?
+        );
+    } else {
+        println!(
+            "API returned {}",
+            response.status()
+        );
+
+        let body = response.text().await?;
+        println!("{}", body);
+    }
+
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
 
@@ -147,6 +179,11 @@ async fn main() -> Result<()> {
     say_hi(&claims);
 
     println!("Access Token: {}", token.access_token);
+
+    
+    println!("Calling protected API...");
+    
+    call_api(&token.access_token).await?;
 
     Ok(())
 }

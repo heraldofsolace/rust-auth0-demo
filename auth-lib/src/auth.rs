@@ -16,7 +16,6 @@ pub async fn validate_token(
     token: &str,
     audience: &str,
 ) -> Result<UserClaims> {
-
     // Decode JWT header
     let header = decode_header(token)?;
 
